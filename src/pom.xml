@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.intelizign.tools</groupId>
+	<groupId>com.intelizign.tools.tcxmlcomparator</groupId>
 	<artifactId>tcxmlcomparator</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.0</version>
@@ -13,12 +13,20 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>[4.0.0,4.9.9]</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.ximpleware/vtd-xml -->
+		<dependency>
+			<groupId>com.ximpleware</groupId>
+			<artifactId>vtd-xml</artifactId>
+			<version>2.13.4</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -31,7 +39,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>com.intelizign.tools.App</mainClass>
+							<mainClass>com.intelizign.tools.tcxmlcomparator.App</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
