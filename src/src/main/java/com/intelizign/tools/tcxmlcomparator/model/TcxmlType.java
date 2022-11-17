@@ -1,5 +1,6 @@
 package com.intelizign.tools.tcxmlcomparator.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.intelizign.tools.tcxmlcomparator.infra.Config;
 
 public class TcxmlType {
   private String name;
@@ -85,12 +87,19 @@ public class TcxmlType {
   private List<String> tmpValues = new ArrayList<>();
   private static final String PUID_ATTR = "puid";
 
-  public void addTempValue(String attributeName, String attributeValue) {
-    if (PUID_ATTR.equals(attributeName)) {
-      tmpPuid = attributeValue;
-    } else {
-      tmpHeader.add(attributeName);
-      tmpValues.add(attributeValue);
+  public void addTempValue(String attributeName, String attributeValue) throws TcxmlInvalidFileException {
+    try {
+      if (!Config.getInstance().ignoreField(attributeName)) {
+        if (PUID_ATTR.equals(attributeName)) {
+          tmpPuid = attributeValue;
+        } else {
+          tmpHeader.add(attributeName);
+          tmpValues.add(attributeValue);
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new TcxmlInvalidFileException(e);
     }
   }
 

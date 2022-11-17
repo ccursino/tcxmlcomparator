@@ -27,9 +27,6 @@ public class TcxmlCompareService {
    * @throws TcxmlInvalidFileException
    */
   public void compareTcxmlFiles(File file1, File file2) throws TcxmlInvalidFileException {
-    // Get the first file
-    TcxmlFile t1 = null;
-
     // Create file structure
     File parentFolder = createFolderStructure();
 
@@ -51,7 +48,9 @@ public class TcxmlCompareService {
       CsvWritter.getInstance().extractCsv(parentFolder, tcxml2);
 
       // Extract the differences and compute it into the report
+      // TODO:make the extraction of the differences
 
+      makeReportResume(report, tcxml1, tcxml2);
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -68,5 +67,9 @@ public class TcxmlCompareService {
     File folder = new File(folderName);
     folder.mkdirs();
     return folder;
+  }
+
+  public void makeReportResume(ReportDTO report, TcxmlFile file1, TcxmlFile file2) {
+    
   }
 }

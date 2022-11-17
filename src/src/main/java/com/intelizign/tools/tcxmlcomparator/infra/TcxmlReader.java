@@ -35,9 +35,8 @@ public class TcxmlReader {
 
       VTDGenExtended vg = new VTDGenExtended();
       vg.setDoc(b);
-      vg.parse(false); // set namespace awareness to true
+      vg.parse(false);
 
-      // VTDNav vn = vg.getNav();
       VTDNavExtended vn = vg.getNavExt();
       AutoPilot ap = new AutoPilot(vn);
 
@@ -51,18 +50,10 @@ public class TcxmlReader {
       while ((result = ap.evalXPath()) != -1) {
         // Check if type has a puid attribute
         if (vn.getAttrVal("puid") >= 0) {
-          // vn.toString(result) give us the element name
           TcxmlType tcxmlType = tcxmlFile.getType(vn.toString(result));
 
           // feed the type with data from the attributes
           vn.feedData(tcxmlType);
-
-          // System.out.print("" + result + " ");
-          // System.out.print("Element name ==> " + vn.toString(result) + vn.getAttrCount());
-
-          // int t = vn.getText(); // get the index of the text (char data or CDATA)
-          // if (t != -1)
-          // System.out.println(" Text ==> " + vn.toNormalizedString(t));
         }
         count++;
       }

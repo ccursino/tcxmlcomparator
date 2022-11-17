@@ -1,5 +1,6 @@
 package com.intelizign.tools.tcxmlcomparator.lib;
 
+import com.intelizign.tools.tcxmlcomparator.model.TcxmlInvalidFileException;
 import com.intelizign.tools.tcxmlcomparator.model.TcxmlType;
 import com.ximpleware.FastIntBuffer;
 import com.ximpleware.FastLongBuffer;
@@ -15,10 +16,9 @@ public class VTDNavExtended extends VTDNav_L5 {
     super(RootIndex, enc, NS, depth, x, vtd, l1, l2, l3, l4, l5, so, length);
   }
 
-  public void feedData(TcxmlType tcxmlType) throws NavException {
+  public void feedData(TcxmlType tcxmlType) throws NavException, TcxmlInvalidFileException {
     if (context[0] == -1)
       return;
-    // int count = 0;
     int index = getCurrentIndex() + 1;
     while (index < vtdSize) {
       int type = getTokenType(index);
