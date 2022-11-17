@@ -34,5 +34,5 @@ build/
 
 *.zip
 *.bak
-logs
+logs/
 results/
