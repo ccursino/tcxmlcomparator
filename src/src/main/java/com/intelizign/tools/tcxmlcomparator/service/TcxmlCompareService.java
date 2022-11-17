@@ -1,9 +1,12 @@
 package com.intelizign.tools.tcxmlcomparator.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import com.intelizign.tools.tcxmlcomparator.infra.CsvWritter;
 import com.intelizign.tools.tcxmlcomparator.infra.TcxmlReader;
+import com.intelizign.tools.tcxmlcomparator.model.ReportDTO;
 import com.intelizign.tools.tcxmlcomparator.model.TcxmlFile;
 import com.intelizign.tools.tcxmlcomparator.model.TcxmlInvalidFileException;
 
@@ -21,16 +24,39 @@ public class TcxmlCompareService {
    * 
    * @param file1
    * @param file2
-   * @throws TcxmlInvalidFileException 
+   * @throws TcxmlInvalidFileException
    */
   public void compareTcxmlFiles(File file1, File file2) throws TcxmlInvalidFileException {
-    //Get the first file
+    // Get the first file
     TcxmlFile t1 = null;
-    
+
     // Create file structure
     File parentFolder = createFolderStructure();
-    
+
     TcxmlFile tcxml1 = TcxmlReader.getInstance().extractFile(file1);
+    TcxmlFile tcxml2 = TcxmlReader.getInstance().extractFile(file2);
+
+    ReportDTO report = new ReportDTO();
+
+    // Compare the headers of both files.
+    // The extraction must be made only with common attributes. The other attributes will be on the
+    // final report.
+    tcxml1.compareHeadersWith(tcxml2, report);
+
+    // Extract the first file
+    try {
+      CsvWritter.getInstance().extractCsv(parentFolder, tcxml1);
+
+      // Extract the second file
+      CsvWritter.getInstance().extractCsv(parentFolder, tcxml2);
+
+      // Extract the differences and compute it into the report
+
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new TcxmlInvalidFileException(e);
+    }
 
   }
 

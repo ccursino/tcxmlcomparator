@@ -3,12 +3,12 @@ package com.intelizign.tools.tcxmlcomparator.infra;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Map;
 import com.intelizign.tools.tcxmlcomparator.lib.GeneralLib;
 import com.intelizign.tools.tcxmlcomparator.lib.VTDGenExtended;
 import com.intelizign.tools.tcxmlcomparator.lib.VTDNavExtended;
 import com.intelizign.tools.tcxmlcomparator.model.TcxmlFile;
 import com.intelizign.tools.tcxmlcomparator.model.TcxmlInvalidFileException;
+import com.intelizign.tools.tcxmlcomparator.model.TcxmlType;
 import com.ximpleware.AutoPilot;
 import com.ximpleware.NavException;
 import com.ximpleware.ParseException;
@@ -37,34 +37,38 @@ public class TcxmlReader {
       vg.setDoc(b);
       vg.parse(false); // set namespace awareness to true
 
-      //VTDNav vn = vg.getNav();
+      // VTDNav vn = vg.getNav();
       VTDNavExtended vn = vg.getNavExt();
       AutoPilot ap = new AutoPilot(vn);
 
       ap.selectXPath("//TCXML/child::*");
 
-      TcxmlFile tResult = new TcxmlFile();
-      tResult.setFile(file);
+      TcxmlFile tcxmlFile = new TcxmlFile();
+      tcxmlFile.setFile(file);
 
       int result = -1;
       int count = 0;
       while ((result = ap.evalXPath()) != -1) {
+        // Check if type has a puid attribute
+        if (vn.getAttrVal("puid") >= 0) {
+          // vn.toString(result) give us the element name
+          TcxmlType tcxmlType = tcxmlFile.getType(vn.toString(result));
 
+          // feed the type with data from the attributes
+          vn.feedData(tcxmlType);
 
-        System.out.print("" + result + " ");
-        System.out.print("Element name ==> " + vn.toString(result) + vn.getAttrCount());
-        
-        Map<String, String> mp= vn.getAttrMap();
+          // System.out.print("" + result + " ");
+          // System.out.print("Element name ==> " + vn.toString(result) + vn.getAttrCount());
 
-        // int t = vn.getText(); // get the index of the text (char data or CDATA)
-        // if (t != -1)
-        // System.out.println(" Text ==> " + vn.toNormalizedString(t));
-        System.out.println("\n ============================== ");
+          // int t = vn.getText(); // get the index of the text (char data or CDATA)
+          // if (t != -1)
+          // System.out.println(" Text ==> " + vn.toNormalizedString(t));
+        }
         count++;
       }
       System.out.println("Total # of element " + count);
 
-      return null;
+      return tcxmlFile;
 
 
     } catch (IOException | XPathParseException | ParseException | XPathEvalException
