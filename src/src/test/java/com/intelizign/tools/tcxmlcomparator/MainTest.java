@@ -9,9 +9,9 @@ public class MainTest {
 
   @Test
   public void testCompare() throws TcxmlInvalidFileException {
-    File f1 = new File("../samples/sample1.xml");
+    //File f1 = new File("../samples/sample1.xml");
 //    File f1 = new File("../samples/testFile.xml");
-    //File f1 = new File("../samples/bigSample.xml");
+    File f1 = new File("../samples/bigSample.xml");
     File f2 = new File("../samples/sample2.xml");
 
     TcxmlCompareService.getInstance().compareTcxmlFiles(f1, f2);
