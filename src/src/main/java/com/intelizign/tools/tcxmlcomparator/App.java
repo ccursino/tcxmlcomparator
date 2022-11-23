@@ -1,6 +1,8 @@
 package com.intelizign.tools.tcxmlcomparator;
 
 import java.io.File;
+import com.intelizign.tools.tcxmlcomparator.model.TcxmlInvalidFileException;
+import com.intelizign.tools.tcxmlcomparator.service.TcxmlCompareService;
 
 /**
  * Hello world!
@@ -23,8 +25,12 @@ public class App {
       }
     }
     
-    System.out.println("Comparando....");
-
+    try {
+      TcxmlCompareService.getInstance().compareTcxmlFiles(file1, file2);
+    } catch (TcxmlInvalidFileException e) {
+      System.out.println("Error: " + e.getMessage());
+      help();
+    }
     
   }
 
