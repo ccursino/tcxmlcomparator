@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import com.intelizign.tools.tcxmlcomparator.infra.Config;
+import com.intelizign.tools.tcxmlcomparator.lib.GeneralLib;
 
 public class TcxmlType {
   private String name;
@@ -70,14 +71,16 @@ public class TcxmlType {
     return str.toString();
   }
 
+  public Long getSize() {
+    return (long) data.size();
+  }
+
   /**
    * Gets an ordered set of puids
    * 
    * @return
    */
   public Set<String> getPuids() {
-    // Set<String> setPuids = new
-
     return data.keySet().stream().sorted()
         .collect(Collectors.toCollection(LinkedHashSet<String>::new));
   }
@@ -87,7 +90,8 @@ public class TcxmlType {
   private List<String> tmpValues = new ArrayList<>();
   private static final String PUID_ATTR = "puid";
 
-  public void addTempValue(String attributeName, String attributeValue) throws TcxmlInvalidFileException {
+  public void addTempValue(String attributeName, String attributeValue)
+      throws TcxmlInvalidFileException {
     try {
       if (!Config.getInstance().ignoreField(attributeName)) {
         if (PUID_ATTR.equals(attributeName)) {
@@ -100,6 +104,110 @@ public class TcxmlType {
     } catch (IOException e) {
       e.printStackTrace();
       throw new TcxmlInvalidFileException(e);
+    }
+  }
+
+  public Difference getDiff(String puid, TcxmlType type2) {
+    String[] data1 = data.get(puid);
+    String[] data2 = type2.data.get(puid);
+    Difference result = new Difference();
+
+    for (String header : headerIndex.keySet()) {
+      Integer id1 = headerIndex.get(header);
+      Integer id2 = type2.headerIndex.get(header);
+      if (data1.length > id1 && id2 == null) {
+        result.headerOrphansA.add(header);
+      } else if (id2 != null && data2.length > id2 && data1.length <= id1) {
+        result.headerOrphansB.add(header);
+      } else if (id2 != null && data1.length > id2 && data1.length > id1) {
+        if (!GeneralLib.stringCompare(data1[id1], data2[id2])) {
+          result.hasDifference = true;
+          result.addDetails(header, data1[id1], data2[id2]);
+        }
+      }
+    }
+
+    for (String header : type2.headerIndex.keySet()) {
+      Integer id1 = headerIndex.get(header);
+      if (id1 == null) {
+        result.headerOrphansB.add(header);
+      }
+    }
+    return result;
+  }
+
+  public class Difference {
+    List<String> headerOrphansA = new ArrayList<>();
+    List<String> headerOrphansB = new ArrayList<>();
+    boolean hasDifference = false;
+    List<Details> details = new ArrayList<>();
+
+    public List<String> getHeaderOrphansA() {
+      return headerOrphansA;
+    }
+
+    public void addDetails(String header, String value1, String value2) {
+      details.add(new Details(header, value1, value2));
+    }
+
+    public void setHeaderOrphansA(List<String> headerOrphansA) {
+      this.headerOrphansA = headerOrphansA;
+    }
+
+    public List<String> getHeaderOrphansB() {
+      return headerOrphansB;
+    }
+
+    public void setHeaderOrphansB(List<String> headerOrphansB) {
+      this.headerOrphansB = headerOrphansB;
+    }
+
+    public boolean isHasDifference() {
+      return hasDifference;
+    }
+
+    public void setHasDifference(boolean hasDifference) {
+      this.hasDifference = hasDifference;
+    }
+
+    public List<Details> getDetails() {
+      return details;
+    }
+
+    public class Details {
+      String header;
+      String value1;
+      String value2;
+
+      public Details(String header, String value1, String value2) {
+        this.header = header;
+        this.value1 = value1;
+        this.value2 = value2;
+      }
+
+      public String getHeader() {
+        return header;
+      }
+
+      public void setHeader(String header) {
+        this.header = header;
+      }
+
+      public String getValue1() {
+        return value1;
+      }
+
+      public void setValue1(String value1) {
+        this.value1 = value1;
+      }
+
+      public String getValue2() {
+        return value2;
+      }
+
+      public void setValue2(String value2) {
+        this.value2 = value2;
+      }
     }
   }
 
