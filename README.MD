@@ -55,7 +55,7 @@
 
 ### Built With
 * [![Java][Java-img]][Java-url]
-* [![VTD-XML][VTD-img]][VTD-url]
+* [![VTD-XML]VTD-XML][VTD-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
