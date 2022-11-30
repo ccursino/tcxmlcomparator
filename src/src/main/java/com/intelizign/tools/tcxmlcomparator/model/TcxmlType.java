@@ -81,8 +81,7 @@ public class TcxmlType {
    * @return
    */
   public Set<String> getPuids() {
-    return data.keySet().stream().sorted()
-        .collect(Collectors.toCollection(LinkedHashSet<String>::new));
+    return data.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet<String>::new));
   }
 
   private String tmpPuid;
@@ -90,8 +89,7 @@ public class TcxmlType {
   private List<String> tmpValues = new ArrayList<>();
   private static final String PUID_ATTR = "puid";
 
-  public void addTempValue(String attributeName, String attributeValue)
-      throws TcxmlInvalidFileException {
+  public void addTempValue(String attributeName, String attributeValue) throws TcxmlInvalidFileException {
     try {
       if (!Config.getInstance().ignoreField(attributeName)) {
         if (PUID_ATTR.equals(attributeName)) {
@@ -119,7 +117,7 @@ public class TcxmlType {
         result.headerOrphansA.add(header);
       } else if (id2 != null && data2.length > id2 && data1.length <= id1) {
         result.headerOrphansB.add(header);
-      } else if (id2 != null && data1.length > id2 && data1.length > id1) {
+      } else if (id2 != null && data1.length > id1 && data2.length > id1) {
         if (!GeneralLib.stringCompare(data1[id1], data2[id2])) {
           result.hasDifference = true;
           result.addDetails(header, data1[id1], data2[id2]);
@@ -215,8 +213,12 @@ public class TcxmlType {
    * Persists into memory the temp values
    */
   public void commit() {
-    // Creates a vector with the size of temp
-    String[] row = new String[tmpHeader.size()];
+    // Checks if we have new header
+    for (String str : tmpHeader) {
+      checkHeader(str);
+    }
+    // Creates a vector with the size of the header
+    String[] row = new String[header.size()];
     data.put(tmpPuid, row);
 
     // Vector must be on sync with header
@@ -231,6 +233,13 @@ public class TcxmlType {
     this.tmpPuid = null;
   }
 
+  private void checkHeader(String head) {
+    if (!headerIndex.containsKey(head)) {
+      header.add(head);
+      headerIndex.put(head, header.size() - 1);
+    }
+  }
+
   private int indexOfHeader(String head) {
     Integer result = headerIndex.get(head);
     if (result == null) {
@@ -241,7 +250,7 @@ public class TcxmlType {
     return result;
   }
 
-  public void compareHeaders(TcxmlType type2) {
+  public void compareHeaders(TcxmlType type2, ReportDTO report) {
     List<Header> header1 = new ArrayList<>();
     List<Header> header2 = new ArrayList<>();
     for (int i = 0; i < header.size(); i++) {
@@ -250,11 +259,27 @@ public class TcxmlType {
       if (i2 != null) {
         header1.add(new Header(header.get(i), i));
         header2.add(new Header(header.get(i), i2));
+      } else {
+        // add exception to the report
+        TcxmlReportType type = report.addType(getName());
+        type.addOrphanFieldA(header.get(i));
       }
     }
+
+    // Check for exceptions on the other side
+    for (int i = 0; i < type2.header.size(); i++) {
+      Integer i1 = headerIndex.get(type2.header.get(i));
+      if (i1 == null) {
+        // add exception to the report
+        TcxmlReportType type = report.addType(getName());
+        type.addOrphanFieldB(type2.header.get(i));
+      }
+    }
+
     this.finalHeader = header1;
     type2.finalHeader = header2;
   }
+
 
   protected class Header {
     public Header(String header, int position) {

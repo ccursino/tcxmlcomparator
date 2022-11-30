@@ -45,8 +45,8 @@ public class TcxmlFile {
     for (TcxmlType type1 : this.typeMap.values()) {
       TcxmlType type2 = tcxml2.getType(type1.getName());
       if (type2 != null) {
-        type1.compareHeaders(type2);
-      }
+        type1.compareHeaders(type2, report);
+      } 
     }
   }
 }

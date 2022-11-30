@@ -57,7 +57,7 @@ public class TcxmlReader {
         }
         count++;
       }
-      System.out.println("Total # of element " + count);
+      System.out.println("Total # of elements in file " + file.getName() + ": " + count);
 
       return tcxmlFile;
 

@@ -35,12 +35,12 @@ public class TcxmlReportField {
   }
 
   public void addDetail(String str) {
-    this.detail.append(str).append('\n');
+    this.detail.append('\t').append(str).append('\n');
   }
 
   @Override
   public String toString() {
-    return name + ":" + qt + '\n';
+    return name + ":" + qt + '\n' + detail;
   }
 
 }

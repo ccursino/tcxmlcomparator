@@ -80,14 +80,14 @@ public class TcxmlReportType {
     return null;
   }
 
-  public void addFieldDiff(String fieldName, String value1, String value2) {
+  public void addFieldDiff(String puid, String fieldName, String value1, String value2) {
     TcxmlReportField field = getFieldDiff(fieldName);
     if (field == null) {
       field = new TcxmlReportField(fieldName);
       fieldDiff.add(field);
     }
     field.addQt();
-    field.addDetail(value1 + " : " + value2);
+    field.addDetail(puid + " - " + value1 + " : " + value2);
   }
 
   public List<TcxmlReportField> getOrphanFieldA() {
@@ -105,21 +105,19 @@ public class TcxmlReportType {
   public void addPuidOrphanB() {
     this.qtOrphanPuidB++;
   }
+  
+  public void addOrphanFieldA(String fieldName) {
+    orphanFieldA.add(new TcxmlReportField(fieldName));
+  }
+  
+  public void addOrphanFieldB(String fieldName) {
+    orphanFieldB.add(new TcxmlReportField(fieldName));
+  }
 
   @Override
   public String toString() {
     StringBuilder result = new StringBuilder();
     char lf = '\n';
-    // String name;
-    // Long qtPuidA;
-    // Long qtPuidB;
-    // Long qtOrphanPuidA = 0L;
-    // Long qtOrphanPuidB = 0L;
-    // Long diffPuids = 0L;
-    // List<TcxmlReportField> fieldDiff = new ArrayList<>();
-    // List<TcxmlReportField> orphanFieldA = new ArrayList<>();
-    // List<TcxmlReportField> orphanFieldB = new ArrayList<>();
-
     result.append("============================").append(lf);
     result.append("Type: ").append(name).append(lf);
     result.append("============================").append(lf);
@@ -140,7 +138,7 @@ public class TcxmlReportType {
     }
     if (orphanFieldA.size() > 0) {
       result.append(">>>> Fields in 1st file not found in 2nd file:").append(lf);
-      boolean first = false;
+      boolean first = true;
       for (TcxmlReportField tcxmlReportField : orphanFieldA) {
         if (!first) {
           result.append(", ");
@@ -148,11 +146,12 @@ public class TcxmlReportType {
         }
         result.append(tcxmlReportField.getName());
       }
+      result.append(lf).append("<<<<");
     }
     
     if (orphanFieldB.size() > 0) {
       result.append(">>>> Fields in 2nd file not found in 1st file:").append(lf);
-      boolean first = false;
+      boolean first = true;
       for (TcxmlReportField tcxmlReportField : orphanFieldB) {
         if (!first) {
           result.append(", ");
@@ -160,6 +159,7 @@ public class TcxmlReportType {
         }
         result.append(tcxmlReportField.getName());
       }
+      result.append(lf).append("<<<<");
     }
     return result.toString();
   }
