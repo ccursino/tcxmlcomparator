@@ -43,15 +43,18 @@ public class Config {
     return fieldsToIgnore.contains(field);
   }
 
-
   public Properties loadProperties() throws IOException {
     Properties configuration = new Properties();
-    InputStream inputStream =
-        Config.class.getClassLoader().getResourceAsStream("application.properties");
-    configuration.load(inputStream);
-    inputStream.close();
+    InputStream inputStream = Config.class.getClassLoader().getResourceAsStream("application.properties");
+
+    if (inputStream == null) {
+      System.out.println("File application.properties not found.");
+      fieldsToIgnore = new HashSet<>();
+    } else {
+      configuration.load(inputStream);
+      inputStream.close();
+    }
     return configuration;
   }
-
 
 }
